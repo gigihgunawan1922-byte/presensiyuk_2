@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PresensiYuk</title>
+<meta name="theme-color" content="#0E5A7A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PresensiYuk">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest?v=1.0.0">
+<link rel="icon" href="icon-192.png?v=1.0.0" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.0.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F6; --card:#FFFFFF; --ink:#12263F; --muted:#5F7288; --line:#D9E1EA; --field:#F7F9FB;
+  --brand:#0E5A7A; --brand-ink:#FFFFFF; --err:#B3261E;
+  --hadir:#1E8E5A; --hadir-bg:#E3F4EB; --izin:#B7791F; --izin-bg:#FBF0DA; --sakit:#C2433D; --sakit-bg:#FBE7E5;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0C1824; --card:#142536; --ink:#E8EEF4; --muted:#93A5B8; --line:#243A50; --field:#0F1E2D;
+  --brand:#3DA5CC; --brand-ink:#08202C; --err:#F2928C;
+  --hadir:#4CC38A; --hadir-bg:#12392B; --izin:#E3A94A; --izin-bg:#3B2D12; --sakit:#EF7D76; --sakit-bg:#401D1B;
+}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI","Noto Sans JP","Noto Sans KR",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{max-width:440px;margin:0 auto;padding:16px 18px 104px}
+header{display:flex;align-items:center;gap:12px;padding:6px 2px 14px}
+.who{flex:1;min-width:0}
+.who h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.net{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.net i{width:8px;height:8px;border-radius:50%;background:var(--hadir)}
+.net.off i{background:var(--sakit)}
+.avatar{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--field) center/cover no-repeat;color:var(--brand);font:700 18px inherit;display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
+.avatar.big{width:112px;height:112px;font-size:40px;margin:0 auto 14px;cursor:default}
+
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 24px -16px rgba(18,38,63,.35);margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:15px}
+.hero{text-align:center;padding:26px 20px 22px}
+.time{font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--brand);line-height:1.1}
+.date{font-size:14px;color:var(--muted);margin-top:4px}
+.hello{margin:12px 0 0;font-size:14px;color:var(--ink)}
+.muted{color:var(--muted);font-size:14px;margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.dur{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px}
+.dur small{display:block;color:var(--muted);font-size:12px}
+.dur .t{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:2px 0}
+.dur .t.run{color:var(--hadir)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:6px 10px;border-radius:999px;background:var(--field);border:1px solid var(--line);font-size:13px;font-weight:600}
+.chip small{color:var(--muted);font-weight:500;margin-left:4px}
+
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:12px;transition:transform .1s,opacity .15s}
+button:focus-visible,input:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 45%,transparent);outline-offset:2px}
+.big-btn{width:100%;height:68px;margin-bottom:14px;background:var(--brand);color:var(--brand-ink);font-size:18px;border-radius:16px;box-shadow:0 10px 24px -12px var(--brand)}
+.big-btn:active,.submit:active{transform:scale(.985)}
+.btn2{width:100%;height:48px;background:var(--field);color:var(--ink);border:1.5px solid var(--line)}
+.submit{width:100%;height:54px;background:var(--brand);color:var(--brand-ink);font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px}
+.submit:disabled{opacity:.7;cursor:progress}
+.spinner{width:18px;height:18px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.banner{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14px;background:var(--sakit-bg);color:var(--err)}
+.banner.show{display:block}
+.danger{width:100%;height:46px;background:var(--sakit-bg);color:var(--err)}
+
+/* Lembar pilihan jenis presensi */
+.ov{position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 10px) 18px calc(env(safe-area-inset-bottom,0px) + 18px)}
+.ovin{max-width:440px;margin:0 auto}
+.sheetWrap{background:rgba(8,20,32,.55);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet{width:100%;max-width:440px;background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 18px)}
+.sheet h3{margin:0 0 12px;font-size:17px}
+.opt{display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px;background:var(--field);border:1.5px solid var(--line);color:var(--ink);border-radius:14px}
+.opt b{display:block;font-size:16px}
+.opt small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.opt:not(:disabled){border-color:var(--brand)}
+.opt:disabled{opacity:.55;cursor:not-allowed}
+
+/* Kamera selfie */
+.camTop{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.camTop h2{margin:0;font-size:18px}
+.back{background:var(--field);border:1.5px solid var(--line);color:var(--ink);height:40px;padding:0 14px}
+.frame{position:relative;width:min(100%,calc(50vh * .75));aspect-ratio:3/4;margin:0 auto 12px;border-radius:18px;overflow:hidden;background:#0A1621;border:1px solid var(--line)}
+.frame video,.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+#cam[data-s=live] video,#cam[data-s=done] img{display:block}
+.msg{font-size:13px;color:var(--err);text-align:center;margin:0 0 10px;min-height:0}
+fieldset{border:0;padding:0;margin:0 0 14px}
+legend{font-size:14px;font-weight:600;margin:0 0 6px;padding:0}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{display:flex;align-items:center;justify-content:center;min-height:44px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);font-size:14px;font-weight:600;cursor:pointer;user-select:none}
+.seg input:focus-visible+label{box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 25%,transparent)}
+.seg input[value=Hadir]:checked+label{background:var(--hadir-bg);border-color:var(--hadir);color:var(--hadir)}
+.seg input[value=Izin]:checked+label{background:var(--izin-bg);border-color:var(--izin);color:var(--izin)}
+.seg input[value=Sakit]:checked+label{background:var(--sakit-bg);border-color:var(--sakit);color:var(--sakit)}
+.row2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
+#cam[data-s=sent] .m-cap,#cam:not([data-s=live]) .m-live,#cam:not([data-s=done]) .m-done,#cam:not([data-s=sent]) .m-sent{display:none}
+.m-sent{text-align:center}
+.m-sent .pic{width:96px;height:128px;border-radius:14px;object-fit:cover;margin:6px auto 14px;display:block;border:1px solid var(--line)}
+.greet{margin:0 0 16px;font-size:22px;font-weight:700;line-height:1.35}
+.summary{text-align:left;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 16px;background:var(--card)}
+.summary div{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;font-size:14px}
+.summary div+div{border-top:1px solid var(--line)}
+.summary span:first-child{color:var(--muted)}.summary span:last-child{font-weight:600;text-align:right}
+
+/* Riwayat & profil */
+.item{display:flex;gap:12px;align-items:center;padding:12px 0}
+.item+.item{border-top:1px solid var(--line)}
+.item img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none;background:var(--field)}
+.item b{font-size:15px;margin-right:8px}
+.item small{display:block;color:var(--muted);font-size:13px}
+.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}
+.pill.Hadir{background:var(--hadir-bg);color:var(--hadir)}.pill.Izin{background:var(--izin-bg);color:var(--izin)}.pill.Sakit{background:var(--sakit-bg);color:var(--sakit)}
+.empty{color:var(--muted);text-align:center;padding:24px 8px;font-size:14px}
+.prof{text-align:center}
+.field{margin:0 0 14px;text-align:left}
+.lbl{display:block;font-size:14px;font-weight:600;margin:0 0 6px}
+input[type=text],input[type=password]{width:100%;height:50px;padding:0 14px;font:inherit;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:12px;outline:none}
+input[type=text]:focus,input[type=password]:focus{border-color:var(--brand);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 18%,transparent)}
+.pHint{font-size:13px;margin:10px 0 0;min-height:20px;color:var(--hadir)}
+.pHint.err{color:var(--err)}
+#login{z-index:30}
+.upd{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:40;max-width:416px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:600;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+.upd button{height:36px;padding:0 14px;background:var(--brand);color:var(--brand-ink)}
+
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+nav div{display:flex;width:100%;max-width:440px}
+nav button{flex:1;height:60px;background:none;border-radius:0;color:var(--muted);font-size:13px;position:relative}
+nav button.on{color:var(--brand)}
+nav button.on::after{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--brand)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <button class="avatar" id="hAvatar" aria-label="Buka profil"></button>
+    <div class="who"><h1>PresensiYuk</h1><span class="net" id="net"><i></i><span id="netTxt">Online</span></span></div>
+  </header>
+
+  <section class="view on" id="v-home">
+    <div class="card hero">
+      <div class="time" id="time">--:--:--</div>
+      <div class="date" id="date"></div>
+      <p class="hello" id="hello"></p>
+    </div>
+
+    <button type="button" class="big-btn" id="openSheet">Presensi</button>
+
+    <div class="grid2">
+      <div class="dur"><small>Durasi kerja</small><div class="t" id="dKerja">00:00:00</div><small id="cKerja">Belum dimulai</small></div>
+      <div class="dur"><small>Durasi lembur</small><div class="t" id="dLembur">00:00:00</div><small id="cLembur">Belum dimulai</small></div>
+    </div>
+
+    <div class="card"><h3>Presensi hari ini</h3><div id="today"></div></div>
+  </section>
+
+  <section class="view" id="v-hist">
+    <div class="card"><h3>Riwayat presensi</h3><div id="histList"></div></div>
+  </section>
+
+  <section class="view" id="v-profil">
+    <div class="card prof">
+      <div class="avatar big" id="pAvatar"></div>
+      <button type="button" class="btn2" id="pBtn" style="margin-bottom:18px">Ganti foto profil</button>
+      <input type="file" id="pFile" accept="image/*" hidden>
+      <h2 style="margin:0" id="pNama"></h2><p class="muted" id="pRole" style="margin:2px 0 14px"></p>
+      <div class="summary" id="pInfo"></div>
+      <p class="pHint err" id="pHint" role="status"></p>
+    </div>
+    <button type="button" class="btn2" id="logoutBtn" style="margin-bottom:10px">Keluar dari akun</button>
+    <button type="button" class="danger" id="clearHist">Hapus riwayat di perangkat ini</button>
+    <p class="muted" id="ver" style="text-align:center;margin-top:16px"></p>
+  </section>
+</main>
+
+<div class="upd" id="upd" hidden role="status"><span>Versi baru tersedia.</span><button type="button" id="updBtn">Muat ulang</button></div>
+
+<nav><div>
+  <button data-v="home" class="on">Beranda</button>
+  <button data-v="hist">Riwayat</button>
+  <button data-v="profil">Profil</button>
+</div></nav>
+
+<!-- Pilihan jenis presensi -->
+<div class="ov sheetWrap" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-label="Pilih jenis presensi">
+    <h3>Pilih jenis presensi</h3>
+    <div id="opts"></div>
+    <button type="button" class="btn2" id="sheetClose">Batal</button>
+  </div>
+</div>
+
+<!-- Kamera selfie -->
+<div class="ov" id="cam" data-s="live" hidden><div class="ovin">
+  <div class="camTop"><button type="button" class="back" id="camClose">Tutup</button><h2 id="camTitle"></h2></div>
+
+  <div class="m-cap">
+    <div class="frame"><video id="video" playsinline muted></video><img id="snap" alt="Hasil selfie"></div>
+    <p class="msg" id="camMsg" role="alert"></p>
+    <fieldset>
+      <legend>Status kehadiran</legend>
+      <div class="seg">
+        <input type="radio" name="status" id="s1" value="Hadir" checked><label for="s1">Hadir</label>
+        <input type="radio" name="status" id="s2" value="Izin"><label for="s2">Izin</label>
+        <input type="radio" name="status" id="s3" value="Sakit"><label for="s3">Sakit</label>
+      </div>
+    </fieldset>
+    <div class="m-live">
+      <button type="button" class="submit" id="shutter">Ambil foto</button>
+      <button type="button" class="btn2" id="fallback" style="margin-top:10px" hidden>Pakai kamera bawaan HP</button>
+    </div>
+    <div class="m-done row2">
+      <button type="button" class="btn2" id="retake">Ulangi</button>
+      <button type="button" class="submit" id="send"><span class="spinner" aria-hidden="true"></span><span id="sendTxt">Kirim Presensi</span></button>
+    </div>
+    <div class="banner" id="banner" role="alert"></div>
+    <input type="file" id="fileSelfie" accept="image/*" capture="user" hidden>
+  </div>
+
+  <div class="m-sent" role="status">
+    <img class="pic" id="sentPic" alt="Selfie presensi">
+    <p class="greet" id="gText"></p>
+    <div class="summary" id="summary"></div>
+    <button type="button" class="submit" id="sentDone">Selesai</button>
+  </div>
+</div></div>
+
+<!-- Masuk -->
+<div class="ov" id="login"><div class="ovin" style="padding-top:8vh">
+  <div class="card prof">
+    <img src="icon-192.png?v=1.0.0" alt="" width="72" height="72" style="border-radius:18px;margin:0 auto 12px;display:block">
+    <h2 style="margin:0 0 4px">PresensiYuk</h2>
+    <p class="muted" style="margin-bottom:18px">Masuk dengan akun karyawan Anda</p>
+    <div class="field"><label class="lbl" for="lgUser">Username</label>
+      <input type="text" id="lgUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+    <div class="field"><label class="lbl" for="lgPass">Password</label>
+      <input type="password" id="lgPass" autocomplete="current-password"></div>
+    <button type="button" class="submit" id="lgBtn"><span class="spinner" aria-hidden="true"></span><span id="lgTxt">Masuk</span></button>
+    <p class="pHint err" id="lgMsg" role="alert"></p>
+  </div>
+</div></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwsWWZiicn4b5h_Ijt-q22aAFoPPCwSd3jv5LEDBNGxTISxK2y8VTpujvHZrG4Lk4oa/exec";
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+};
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2, "0");
+const hm = d => pad(d.getHours()) + ":" + pad(d.getMinutes());
+const dayKey = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+
+const OPTS = [["masuk","Presensi Masuk"],["keluar","Presensi Keluar"],["lmasuk","Masuk Lembur"],["lkeluar","Keluar Lembur"]];
+const KEYS = Object.fromEntries(OPTS);
+const GREET = [
+  "Terima kasih, {n}! Semoga harimu menyenangkan.",
+  "Merci, {n} ! Passez une excellente journée.",
+  "ありがとうございます、{n}さん！良い一日を。",
+  "감사합니다, {n}님! 좋은 하루 보내세요.",
+  "Thank you, {n}! Have a wonderful day.",
+  "Danke, {n}! Einen schönen Tag noch."
+];
+
+let session = LS.get("py_session", null);   // {id, username, nama, role, tgl, alamat, token}
+const K = k => k + "_" + (session ? session.id : "");   // data dipisah per akun
+let profile = {foto:""}, hist = [], st = null;           // st: {date, t:{jenis:iso}, ses:{kerja,lembur}}
+let stream = null, selfie = null, curKey = null;
+
+/* State presensi: 1 kali per jenis per hari; sesi durasi tetap berjalan walau lewat tengah malam */
+function ensureState(){
+  const k = dayKey(new Date());
+  if(!st || !st.t) st = {date:k, t:{}, ses:{kerja:null, lembur:null}};
+  if(!st.ses) st.ses = {kerja:null, lembur:null};
+  if(st.date !== k){ st.date = k; st.t = {}; LS.set(K("py_state"), st); }
+}
+function avail(key){
+  ensureState();
+  if(st.t[key]) return {ok:false, note:"Sudah presensi pukul " + hm(new Date(st.t[key]))};
+  if(key === "keluar" && !(st.ses.kerja && !st.ses.kerja.end)) return {ok:false, note:"Lakukan Presensi Masuk lebih dulu"};
+  if(key === "lkeluar" && !(st.ses.lembur && !st.ses.lembur.end)) return {ok:false, note:"Lakukan Masuk Lembur lebih dulu"};
+  return {ok:true, note:"Ketuk untuk membuka kamera selfie"};
+}
+function recordState(key, iso){
+  st.t[key] = iso;
+  if(key === "masuk") st.ses.kerja = {start:iso, end:null};
+  if(key === "keluar" && st.ses.kerja) st.ses.kerja.end = iso;
+  if(key === "lmasuk") st.ses.lembur = {start:iso, end:null};
+  if(key === "lkeluar" && st.ses.lembur) st.ses.lembur.end = iso;
+  LS.set(K("py_state"), st);
+}
+
+/* Realtime: jam, durasi, koneksi */
+function fmtDur(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s % 3600 / 60)) + ":" + pad(s % 60);
+}
+function renderDur(){
+  [["kerja","dKerja","cKerja"],["lembur","dLembur","cLembur"]].forEach(([k, d, c]) => {
+    const s = st.ses[k];
+    $(d).classList.toggle("run", !!(s && !s.end));
+    if(!s){ $(d).textContent = "00:00:00"; $(c).textContent = "Belum dimulai"; return; }
+    const start = new Date(s.start), end = s.end ? new Date(s.end) : new Date();
+    $(d).textContent = fmtDur(end - start);
+    $(c).textContent = s.end ? "Selesai " + hm(start) + " sampai " + hm(end) : "Berjalan sejak " + hm(start);
+  });
+}
+function renderToday(){
+  const items = OPTS.filter(o => st.t[o[0]]);
+  $("today").innerHTML = items.length
+    ? '<div class="chips">' + items.map(o => '<span class="chip">' + o[1] + '<small>' + hm(new Date(st.t[o[0]])) + '</small></span>').join("") + '</div>'
+    : '<p class="muted">Belum ada presensi hari ini.</p>';
+}
+function tick(){
+  const d = new Date();
+  $("time").textContent = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  $("date").textContent = d.toLocaleDateString("id-ID", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  ensureState(); renderDur(); renderToday();
+}
+function netState(){
+  const on = navigator.onLine;
+  $("net").className = "net" + (on ? "" : " off");
+  $("netTxt").textContent = on ? "Online" : "Offline";
+}
+addEventListener("online", netState); addEventListener("offline", netState);
+
+/* Navigasi */
+function go(v){
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  if(v === "hist") renderHist();
+  scrollTo(0, 0);
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => go(b.dataset.v)));
+$("hAvatar").addEventListener("click", () => go("profil"));
+
+/* Gambar */
+function loadImg(file){
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file), i = new Image();
+    i.onload = () => { res(i); URL.revokeObjectURL(u); };
+    i.onerror = rej; i.src = u;
+  });
+}
+/* Potong tengah gambar ke rasio R (lebar/tinggi), tanpa dibalik (tidak mirror) */
+function crop(el, w, h, R, maxSide, q){
+  let sw = w, sh = h;
+  if(w / h > R) sw = h * R; else sh = w / R;
+  const oh = Math.min(maxSide, sh), c = document.createElement("canvas");
+  c.height = Math.round(oh); c.width = Math.round(oh * R);
+  c.getContext("2d").drawImage(el, (w - sw) / 2, (h - sh) / 2, sw, sh, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", q);
+}
+
+/* Profil (data dari spreadsheet karyawan) */
+function paintAvatar(el){
+  el.style.backgroundImage = profile.foto ? "url(" + profile.foto + ")" : "";
+  el.textContent = profile.foto ? "" : ((session ? session.nama : "?").trim().charAt(0).toUpperCase());
+}
+function renderProfile(){
+  paintAvatar($("hAvatar")); paintAvatar($("pAvatar"));
+  if(!session) return;
+  $("hello").textContent = "Halo, " + session.nama;
+  $("pNama").textContent = session.nama;
+  $("pRole").textContent = (session.role || "").charAt(0).toUpperCase() + (session.role || "").slice(1);
+  $("pInfo").innerHTML = [["ID karyawan", session.id], ["Username", session.username], ["Tanggal lahir", session.tgl], ["Alamat", session.alamat]]
+    .map(r => "<div><span>" + r[0] + "</span><span>" + esc(r[1] || "-") + "</span></div>").join("");
+}
+function pHint(msg, err){ $("pHint").textContent = msg; $("pHint").className = "pHint" + (err ? " err" : ""); }
+$("pBtn").addEventListener("click", () => $("pFile").click());
+$("pFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const img = await loadImg(f);
+    profile.foto = crop(img, img.naturalWidth, img.naturalHeight, 1, 240, .8);
+    LS.set(K("py_profile"), profile); renderProfile(); pHint("");
+  }catch(err){ pHint("Foto profil tidak bisa dibaca. Pilih file gambar lain.", true); }
+  e.target.value = "";
+});
+$("clearHist").addEventListener("click", () => {
+  if(!confirm("Hapus semua riwayat presensi di perangkat ini?")) return;
+  hist = []; LS.set(K("py_hist"), hist); renderHist();
+});
+
+/* Riwayat */
+function renderHist(){
+  const el = $("histList");
+  if(!hist.length){ el.innerHTML = '<div class="empty">Belum ada riwayat. Presensi pertama Anda akan muncul di sini, lengkap dengan foto selfie.</div>'; return; }
+  el.innerHTML = hist.map(h => {
+    const d = new Date(h.t);
+    return '<div class="item"><img src="' + h.thumb + '" alt="Selfie presensi"><div><b>' + esc(h.jenis) + '</b><span class="pill ' + esc(h.status) + '">' + esc(h.status) + '</span>' +
+      '<small>' + d.toLocaleDateString("id-ID", {day:"numeric", month:"short", year:"numeric"}) + ", " + hm(d) + '</small><small>' + esc(h.nama) + '</small></div></div>';
+  }).join("");
+}
+function saveHist(){
+  let ok = LS.set(K("py_hist"), hist);
+  while(!ok && hist.length > 1){ hist.pop(); ok = LS.set(K("py_hist"), hist); }
+}
+
+/* Pilihan jenis presensi */
+$("openSheet").addEventListener("click", () => {
+  $("opts").innerHTML = OPTS.map(o => {
+    const a = avail(o[0]);
+    return '<button type="button" class="opt" data-k="' + o[0] + '"' + (a.ok ? "" : " disabled") + '><b>' + o[1] + '</b><small>' + esc(a.note) + '</small></button>';
+  }).join("");
+  $("sheet").hidden = false;
+});
+$("sheetClose").addEventListener("click", () => { $("sheet").hidden = true; });
+$("opts").addEventListener("click", e => {
+  const b = e.target.closest(".opt");
+  if(!b || b.disabled) return;
+  $("sheet").hidden = true; openCam(b.dataset.k);
+});
+
+/* Kamera selfie */
+const setCam = s => { $("cam").dataset.s = s; };
+function stopCam(){
+  if(stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $("video").srcObject = null;
+}
+async function startCam(){
+  $("camMsg").textContent = ""; $("fallback").hidden = true;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user", width:{ideal:1280}, height:{ideal:960}}, audio:false});
+    $("video").srcObject = stream; await $("video").play();
+  }catch(e){
+    stream = null;
+    $("camMsg").textContent = "Kamera tidak bisa dibuka. Izinkan akses kamera di browser, atau gunakan kamera bawaan HP.";
+    $("fallback").hidden = false;
+  }
+}
+function openCam(key){
+  curKey = key; selfie = null;
+  $("camTitle").textContent = KEYS[key]; $("banner").classList.remove("show");
+  document.querySelector('input[name="status"][value="Hadir"]').checked = true;
+  $("cam").hidden = false; setCam("live"); startCam();
+}
+function closeCam(){ stopCam(); $("cam").hidden = true; }
+function takeSelfie(el, w, h){
+  selfie = { big: crop(el, w, h, 3 / 4, 640, .75), thumb: crop(el, w, h, 3 / 4, 160, .6) };
+  $("snap").src = selfie.big; stopCam(); setCam("done");
+}
+$("shutter").addEventListener("click", () => {
+  const v = $("video");
+  if(!stream || !v.videoWidth){ $("fileSelfie").click(); return; }
+  takeSelfie(v, v.videoWidth, v.videoHeight);
+});
+$("fallback").addEventListener("click", () => $("fileSelfie").click());
+$("fileSelfie").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{ const i = await loadImg(f); takeSelfie(i, i.naturalWidth, i.naturalHeight); $("camMsg").textContent = ""; }
+  catch(err){ $("camMsg").textContent = "Foto tidak bisa dibaca. Coba ambil ulang."; }
+  e.target.value = "";
+});
+$("retake").addEventListener("click", () => { selfie = null; $("snap").removeAttribute("src"); setCam("live"); startCam(); });
+$("camClose").addEventListener("click", closeCam);
+$("sentDone").addEventListener("click", closeCam);
+
+/* Kirim presensi */
+async function send(){
+  const btn = $("send"), banner = $("banner");
+  if(btn.disabled || !selfie) return;
+  banner.classList.remove("show");
+  const a = avail(curKey);
+  if(!a.ok){ banner.textContent = "Presensi ini tidak bisa dikirim: " + a.note + "."; banner.classList.add("show"); return; }
+
+  const now = new Date(), status = document.querySelector('input[name="status"]:checked').value;
+  const payload = { aksi:"presensi", token:session.token, jenis:KEYS[curKey], status,
+    waktu:now.toISOString(), waktu_lokal:now.toLocaleString("id-ID"), foto:selfie.big };
+
+  btn.disabled = true; btn.classList.add("loading"); $("sendTxt").textContent = "Mengirim...";
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 25000);
+  try{
+    const out = await api(payload, ctrl.signal);
+    if(!out.sukses) throw Object.assign(new Error(out.pesan || "Presensi ditolak server."), {server:true});
+
+    recordState(curKey, now.toISOString());
+    hist.unshift({ t:now.toISOString(), nama:session.nama, id:session.id, jenis:KEYS[curKey], status, thumb:selfie.thumb });
+    hist = hist.slice(0, 150); saveHist(); renderDur(); renderToday();
+
+    const gi = LS.get("py_g", 0) % GREET.length;
+    LS.set("py_g", (gi + 1) % GREET.length);
+    $("gText").textContent = GREET[gi].replace("{n}", session.nama);
+    $("sentPic").src = selfie.thumb;
+    $("summary").innerHTML = [["Jenis", KEYS[curKey]], ["Status", status], ["Waktu", payload.waktu_lokal]]
+      .map(r => "<div><span>" + r[0] + "</span><span>" + esc(r[1]) + "</span></div>").join("");
+    setCam("sent");
+  }catch(err){
+    console.error("Gagal kirim presensi:", err);
+    banner.textContent = err.name === "AbortError"
+      ? "Server tidak merespons dalam 25 detik. Coba kirim lagi."
+      : err.server ? err.message
+      : "Presensi belum terkirim (" + (err.message || "tidak ada koneksi") + "). Periksa koneksi internet Anda, lalu coba lagi.";
+    banner.classList.add("show");
+  }finally{
+    clearTimeout(timer); btn.disabled = false; btn.classList.remove("loading"); $("sendTxt").textContent = "Kirim Presensi";
+  }
+}
+$("send").addEventListener("click", send);
+
+/* API, masuk & keluar akun */
+async function api(body, signal){
+  const res = await fetch(API_URL, { method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(body), signal });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  let out;
+  try{ out = await res.json(); }
+  catch(e){ throw new Error("Respons server tidak dikenali. Pastikan skrip sudah di-deploy ulang"); }
+  if(out.kode === "SESI") logout("Sesi berakhir, silakan masuk lagi.");
+  return out;
+}
+function loadUser(){
+  profile = LS.get(K("py_profile"), {foto:""}); hist = LS.get(K("py_hist"), []); st = LS.get(K("py_state"), null);
+  ensureState(); renderProfile(); tick(); go("home");
+}
+function logout(msg){
+  LS.set("py_session", null); session = null; closeCam(); $("sheet").hidden = true;
+  $("lgMsg").textContent = msg || ""; $("lgPass").value = ""; $("login").hidden = false;
+}
+async function doLogin(){
+  const u = $("lgUser").value.trim(), p = $("lgPass").value, b = $("lgBtn");
+  if(b.disabled) return;
+  if(!u || !p){ $("lgMsg").textContent = "Username dan password wajib diisi."; return; }
+  b.disabled = true; b.classList.add("loading"); $("lgTxt").textContent = "Memeriksa..."; $("lgMsg").textContent = "";
+  try{
+    const out = await api({aksi:"login", username:u, password:p});
+    if(!out.sukses) throw Object.assign(new Error(out.pesan || "Username atau password salah."), {server:true});
+    session = Object.assign({}, out.user, {token:out.token}); LS.set("py_session", session);
+    $("login").hidden = true; $("lgUser").value = ""; $("lgPass").value = ""; loadUser();
+  }catch(err){
+    $("lgMsg").textContent = err.server ? err.message : "Tidak bisa masuk (" + (err.message || "periksa koneksi internet") + ").";
+  }finally{
+    b.disabled = false; b.classList.remove("loading"); $("lgTxt").textContent = "Masuk";
+  }
+}
+$("lgBtn").addEventListener("click", doLogin);
+["lgUser","lgPass"].forEach(id => $(id).addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); }));
+$("logoutBtn").addEventListener("click", () => { if(confirm("Keluar dari akun ini?")) logout(); });
+
+/* Mulai */
+netState(); setInterval(tick, 1000);
+if(session){ $("login").hidden = true; loadUser(); } else { tick(); }
+
+/* PWA & versi: naikkan angka APP_VERSION setiap kali Anda memperbarui aplikasi.
+   Cara termudah: di file ini ganti semua teks 1.0.0 dengan nomor versi baru (misalnya 1.0.1). */
+const APP_VERSION = "1.0.0";
+$("ver").textContent = "PresensiYuk versi " + APP_VERSION;
+$("updBtn").addEventListener("click", () => location.reload());
+
+async function cekVersi(){
+  try{
+    const t = await (await fetch("index.html?cek=" + Date.now(), {cache:"no-store"})).text();
+    const m = t.match(/APP_VERSION\s*=\s*"([^"]+)"/);
+    if(m && m[1] !== APP_VERSION) $("upd").hidden = false;
+  }catch(e){ /* offline: abaikan */ }
+}
+if("serviceWorker" in navigator){
+  addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js?v=" + APP_VERSION).catch(() => {});
+    setTimeout(cekVersi, 3000);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) cekVersi(); });
+    setInterval(cekVersi, 30 * 60 * 1000);
+  });
+}
+</script>
+</body>
+</html>
